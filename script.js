@@ -119,58 +119,53 @@ start = () => {
             else console.log(`%c${i+1}. ${tasks[i].task}`, "color: gray; text-decoration: line-through");
         }
     }
-    let decision = prompt("Type in 'x'(without apostrophes) to exit, 'r' to reset(delete all tasks), 'a' to add a new task, 'm' to move a task, 'e' to edit, 'd' to delete, 'c' to check and 'u' to uncheck some tasks");
-    if (decision=='x') return;
-    if (decision=='a') {
-        const add = prompt('Type in the task.');
-        tasks.splice(tasks.length-checkedCounter, 0, new Task(add));
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        start();
+    let decision = prompt("Type in(without apostrophes):\n'a' to add a new task\n'e' to edit some tasks\n'm' to move a task\n'd' to delete some tasks\n'c' to check some tasks\n'u' to uncheck some tasks\n'r' to reset(delete all tasks)\nany other to exit");
+    switch (decision) {
+        case 'a':
+            const add = prompt('Type in the task.');
+            tasks.splice(tasks.length-checkedCounter, 0, new Task(add));
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            break;
+        case 'c':
+            checkTask();
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
+            break;
+        case 'u':
+            uncheckTask();
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
+            break;
+        case 'e':
+            modifyTask();
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            break;
+        case 'd':
+            deleteTask();
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
+            break;
+        case 'm':
+            moveTask();
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            break;
+        case 'r':
+            tasks = [];
+            checkedCounter = 0;
+            console.clear();
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
+            break;
+        default: 
+            return;
     }
-    if (decision=='c') {
-        checkTask();
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
-        start();
-    }
-    if (decision=='u') {
-        uncheckTask();
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
-        start();
-    }
-    if (decision=='e') {
-        modifyTask();
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        start();
-    }
-    if (decision=='d') {
-        deleteTask();
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
-        start();
-    }
-    if (decision=='m')
-    {
-        moveTask();
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        start();
-    }
-    if (decision=='r')
-    {
-        tasks = [];
-        checkedCounter = 0;
-        console.clear();
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
-        start();
-    }
+    start();
 }
 
 //MAIN
