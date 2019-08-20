@@ -73,6 +73,35 @@ uncheckTask = () => {
     }
 }
 
+deleteTask = () => {
+    let decisions = getNumbers();
+    let allCorrect = true;
+    decisions.sort((a,b) => a-b);
+    let shift = 0;
+    for (let i=0; i<decisions.length; i++) {
+        if(((parseInt(decisions[i]), 10) !== NaN) && decisions[i]-1-shift<tasks.length && decisions[i]>0) {
+            tasks.splice(decisions[i]-1-shift, 1);
+            shift++;
+        }
+        else allCorrect = false;
+    }
+    if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
+}
+
+modifyTask = () => {
+    let decisions = getNumbers();
+    let allCorrect = true;
+    decisions.sort((a,b) => a-b);
+    for (let i=0; i<decisions.length; i++) {
+        if(((parseInt(decisions[i]), 10) !== NaN) && decisions[i]-1<tasks.length && decisions[i]>0) {
+            let modifiedTask = prompt(`Type in a new content of ${decisions[i]}. task`);
+            tasks[decisions[i]-1].updateTask(modifiedTask);
+        }
+        else allCorrect = false;
+    }
+    if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
+}
+
 start = () => {
     console.log('%cYour current task lisk:', "color: #085293; text-decoration: underline");
     if (tasks.length===0) console.log('%cNo active tasks.', "color: #1F9AD7");
@@ -109,6 +138,18 @@ start = () => {
     }
     if (decision=='u') {
         uncheckTask();
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        start();
+    }
+    if (decision=='e') {
+        modifyTask();
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        start();
+    }
+    if (decision=='d') {
+        deleteTask();
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
         start();
