@@ -34,7 +34,7 @@ checkTask = () => {
                 tasks[decisions[i]-1-shift].isDone = true;
                 tasks = tasks.concat(tasks.splice(decisions[i]-1-shift, 1));
                 shift++;
-                if(decisions[i]+1===decisions[i+1]) i--;
+                checkedCounter++;
             }
             else allCorrect = false;
         }
@@ -54,6 +54,7 @@ uncheckTask = () => {
             if (tasks[decisions[i]-1-shift].isDone === true) { 
                 tasks[decisions[i]-1-shift].isDone = false;
                 tempArray = tempArray.concat(tasks.splice(decisions[i]-1-shift, 1));
+                checkedCounter--;
                 shift++;
             }
             else allCorrect = false;
@@ -61,16 +62,7 @@ uncheckTask = () => {
         else allCorrect = false;
     }
     if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
-    for (let i=0; i<=tasks.length; i++) {
-        if(i===tasks.length) {
-            tasks=tasks.concat(tempArray);
-            break;
-        }
-        else if(tasks[i].isDone===true) {
-                tasks.splice(i, 0, ...tempArray);
-                break;
-        }
-    }
+    tasks.splice(tasks.length-checkedCounter, 0, ...tempArray);
 }
 
 deleteTask = () => {
@@ -80,8 +72,10 @@ deleteTask = () => {
     let shift = 0;
     for (let i=0; i<decisions.length; i++) {
         if(((parseInt(decisions[i]), 10) !== NaN) && decisions[i]-1-shift<tasks.length && decisions[i]>0) {
+            let done = tasks[decisions[i]-1-shift].isDone;
             tasks.splice(decisions[i]-1-shift, 1);
             shift++;
+            if(done) checkedCounter--;
         }
         else allCorrect = false;
     }
@@ -102,6 +96,19 @@ modifyTask = () => {
     if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
 }
 
+moveTask = ()  => {
+    const numbers = prompt("Type in number of task that you want to move and position to move at(separated by space)");
+    const decision = numbers.split(' ')[0];
+    const destination = numbers.split(' ')[1];
+    let allCorrect = true;
+    if(((parseInt(decision), 10) !== NaN) && decision-1<tasks.length && decision>0 && ((parseInt(destination), 10) !== NaN) && destination-1<tasks.length && ((tasks[decision-1].isDone==true && destination-1>=tasks.length-checkedCounter && destination-1<tasks.length) || (tasks[decision-1].isDone==false && destination-1>=0 && destination-1<tasks.length-checkedCounter))) {
+        
+        tasks.splice(destination-1, 0, tasks.splice(decision-1, 1)[0]);
+    }
+    else allCorrect = false;
+    if (allCorrect === false) alert('Some of your arguments were invalid, thus operation is impossible to do.');
+}
+
 start = () => {
     console.log('%cYour current task lisk:', "color: #085293; text-decoration: underline");
     if (tasks.length===0) console.log('%cNo active tasks.', "color: #1F9AD7");
@@ -112,20 +119,11 @@ start = () => {
             else console.log(`%c${i+1}. ${tasks[i].task}`, "color: gray; text-decoration: line-through");
         }
     }
-    let decision = prompt("Type in 'x'(without apostrophes) to exit, 'a' to add a new task, 'm' to move a task, 'e' to edit, 'd' to delete, 'c' to check and 'u' to uncheck some tasks");
+    let decision = prompt("Type in 'x'(without apostrophes) to exit, 'r' to reset(delete all tasks), 'a' to add a new task, 'm' to move a task, 'e' to edit, 'd' to delete, 'c' to check and 'u' to uncheck some tasks");
     if (decision=='x') return;
     if (decision=='a') {
         const add = prompt('Type in the task.');
-        for (let i=0; i<=tasks.length; i++) {
-            if (i===tasks.length) {
-                tasks.push(new Task(add));
-                break;
-            }
-            if(tasks[i].isDone === true) {
-                tasks.splice(i, 0, new Task(add));
-                break;
-            }
-        }
+        tasks.splice(tasks.length-checkedCounter, 0, new Task(add));
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
         start();
@@ -134,12 +132,14 @@ start = () => {
         checkTask();
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
         start();
     }
     if (decision=='u') {
         uncheckTask();
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
         start();
     }
     if (decision=='e') {
@@ -152,6 +152,23 @@ start = () => {
         deleteTask();
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
+        start();
+    }
+    if (decision=='m')
+    {
+        moveTask();
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        start();
+    }
+    if (decision=='r')
+    {
+        tasks = [];
+        checkedCounter = 0;
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
         start();
     }
 }
@@ -159,4 +176,5 @@ start = () => {
 //MAIN
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let checkedCounter = JSON.parse(localStorage.getItem('checkedCounter')) || 0;
 start();
