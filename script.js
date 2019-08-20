@@ -18,6 +18,60 @@ class Task {
     }
 }
 
+getNumbers = () => {
+    const numbers = prompt("Type in numbers of task(separated by space), which you want to modify");
+    return numbers.split(' ');
+}
+
+checkTask = () => {
+    let decisions = getNumbers();
+    decisions.sort((a,b) => a-b);
+    let allCorrect = true;
+    let shift = 0;
+    for (let i=0; i<decisions.length; i++) {
+        if(((parseInt(decisions[i]), 10) !== NaN) && decisions[i]-1<tasks.length && decisions[i]>0) {
+            if (tasks[decisions[i]-1-shift].isDone === false) { 
+                tasks[decisions[i]-1-shift].isDone = true;
+                tasks = tasks.concat(tasks.splice(decisions[i]-1-shift, 1));
+                shift++;
+                if(decisions[i]+1===decisions[i+1]) i--;
+            }
+            else allCorrect = false;
+        }
+        else allCorrect = false;
+    }
+    if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
+}
+
+uncheckTask = () => {
+    let decisions = getNumbers();
+    decisions.sort((a,b) => a-b);
+    let allCorrect = true;
+    let shift = 0;
+    let tempArray = [];
+    for (let i=0; i<decisions.length; i++) {
+        if(((parseInt(decisions[i]), 10) !== NaN) && decisions[i]-1-shift<tasks.length && decisions[i]>0) {
+            if (tasks[decisions[i]-1-shift].isDone === true) { 
+                tasks[decisions[i]-1-shift].isDone = false;
+                tempArray = tempArray.concat(tasks.splice(decisions[i]-1-shift, 1));
+                shift++;
+            }
+            else allCorrect = false;
+        }
+        else allCorrect = false;
+    }
+    if (allCorrect === false) alert('Some of your arguments were invalid, thus they were omitted.');
+    for (let i=0; i<=tasks.length; i++) {
+        if(i===tasks.length) {
+            tasks=tasks.concat(tempArray);
+            break;
+        }
+        else if(tasks[i].isDone===true) {
+                tasks.splice(i, 0, ...tempArray);
+                break;
+        }
+    }
+}
 
 start = () => {
     console.log('%cYour current task lisk:', "color: #085293; text-decoration: underline");
@@ -43,6 +97,18 @@ start = () => {
                 break;
             }
         }
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        start();
+    }
+    if (decision=='c') {
+        checkTask();
+        console.clear();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        start();
+    }
+    if (decision=='u') {
+        uncheckTask();
         console.clear();
         localStorage.setItem('tasks', JSON.stringify(tasks));
         start();
