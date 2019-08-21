@@ -133,7 +133,7 @@ showDates = () => {
 }
 
 start = () => {
-    console.log('%cYour current task lisk:', "color: #085293; text-decoration: underline");
+    console.log('%cYour current task list:', "color: #085293; text-decoration: underline");
     if (tasks.length===0) console.log('%cNo active tasks.', "color: #1F9AD7");
     else {
         for(let i=0; i<tasks.length; i++)
