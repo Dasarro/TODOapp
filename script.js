@@ -12,6 +12,9 @@ class Task {
     updateDate() {
        this._date = new Date();
     }
+    get _date() {
+        return this._date;
+    }
     updateTask(newTask) {
         this.task = newTask;
         this._date = new Date();
@@ -109,6 +112,26 @@ moveTask = ()  => {
     if (allCorrect === false) alert('Some of your arguments were invalid, thus operation is impossible to do.');
 }
 
+showDates = () => {
+    let dates = '';
+    for (let i=0; i<tasks.length; i++) {
+        let date = tasks[i]._date;
+        day = date.getDate(),
+        month = date.getMonth(),
+        year = date.getFullYear(),
+        hour = date.getHours(),
+        minute = date.getMinutes();
+        day = day < 10 ? "0" + day : day;
+        month = month < 10 ? "0" + month : month;
+        hour = hour < 10 ? "0" + hour : hour;
+        minute = minute < 10 ? "0" + minute : minute;
+        let stringDate = `${i+1}. ${day}.${month}.${year} ${hour}:${minute}`;
+        dates = dates + stringDate;
+        if (i!==tasks.length-1) dates = dates + '\n';
+    }
+    return dates;
+}
+
 start = () => {
     console.log('%cYour current task lisk:', "color: #085293; text-decoration: underline");
     if (tasks.length===0) console.log('%cNo active tasks.', "color: #1F9AD7");
@@ -119,7 +142,7 @@ start = () => {
             else console.log(`%c${i+1}. ${tasks[i].task}`, "color: gray; text-decoration: line-through");
         }
     }
-    let decision = prompt("Type in(without apostrophes):\n'a' to add a new task\n'e' to edit some tasks\n'm' to move a task\n'd' to delete some tasks\n'c' to check some tasks\n'u' to uncheck some tasks\n'r' to reset(delete all tasks)\nany other to exit");
+    let decision = prompt("Type in(without apostrophes):\n'a' to add a new task\n'e' to edit some tasks\n'm' to move a task\n'd' to delete some tasks\n'c' to check some tasks\n'u' to uncheck some tasks\n's' to show dates of last content edit of tasks\n'r' to reset(delete all tasks)\nany other to exit");
     switch (decision) {
         case 'a':
             const add = prompt('Type in the task.');
@@ -162,6 +185,10 @@ start = () => {
             localStorage.setItem('tasks', JSON.stringify(tasks));
             localStorage.setItem('checkedCounter', JSON.stringify(checkedCounter));
             break;
+        case 's':
+            alert(showDates());
+            console.clear();
+            break;
         default: 
             return;
     }
@@ -172,4 +199,7 @@ start = () => {
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let checkedCounter = JSON.parse(localStorage.getItem('checkedCounter')) || 0;
+for(let i=0; i<tasks.length; i++) {
+    tasks[i]._date=new Date(tasks[i]._date);
+}
 start();
